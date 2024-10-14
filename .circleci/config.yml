@@ -1,0 +1,43 @@
+version: 2.1
+
+executors:
+  go-executor:
+    docker:
+      - image: circleci/golang:1.19  # Você pode alterar para a versão de Go que estiver usando
+    working_directory: ~/go/src/github.com/rafaeros/dio-finance-project  # Defina o caminho correto do seu projeto
+
+jobs:
+  build:
+    executor: go-executor
+    steps:
+      - checkout  # Faz o checkout do código
+
+      - run:
+          name: Baixar dependências
+          command: go mod download  # Baixa as dependências do projeto
+
+      - run:
+          name: Compilar o projeto
+          command: go build -o output_file ./...  # Compila o projeto para o arquivo "output_file"
+
+  test:
+    executor: go-executor
+    steps:
+      - checkout  # Faz o checkout do código
+
+      - run:
+          name: Baixar dependências
+          command: go mod download  # Baixa as dependências do projeto
+
+      - run:
+          name: Rodar testes
+          command: go test -v ./...  # Executa todos os testes no modo verbose
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build  # O job de test depende do job de build
